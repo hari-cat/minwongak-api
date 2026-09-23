@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.aptboardapi.common.entity.BaseEntity;
+import org.example.aptboardapi.domain.user.entity.User;
 
 @Entity
 @Getter
@@ -21,4 +22,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PostStatus postStatus;
+    private int readCount;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
 }
