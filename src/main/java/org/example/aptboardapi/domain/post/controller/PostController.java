@@ -40,4 +40,9 @@ public class PostController {
     public void updatePost(@PathVariable("id") Long id, @Valid @RequestBody UpdatePostRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         postService.updatePost(request, id, principal.getUserId());
     }
+
+    @DeleteMapping("/{id}")
+    public void deletePost(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails principal) {
+        postService.deletePost(id, principal.getUserId());
+    }
 }

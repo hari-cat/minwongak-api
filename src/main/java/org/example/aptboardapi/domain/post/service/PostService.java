@@ -56,4 +56,16 @@ public class PostService {
 
         post.update(request.title(), request.content(),request.category());
     }
+
+    @Transactional
+    public void deletePost(Long id, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
+        Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        if(post.getAuthor() != user){
+            throw new BusinessException(ErrorCode.POST_DELETE_FORBIDDEN);
+        }
+
+        post.delete();
+    }
 }

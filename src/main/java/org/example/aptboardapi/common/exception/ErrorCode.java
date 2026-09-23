@@ -50,6 +50,11 @@ public enum ErrorCode {
             "P002",
             "게시물 수정 권한이 없습니다."
     ),
+    POST_DELETE_FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "P003",
+            "게시물 삭제 권한이 없습니다."
+    ),
 
     // 댓글
     COMMENT_NOT_FOUND(

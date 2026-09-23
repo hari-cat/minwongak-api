@@ -23,4 +23,8 @@ public class BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.ACTIVE;
+
+    public void delete(){
+        this.status = Status.DELETED;
+    }
 }
