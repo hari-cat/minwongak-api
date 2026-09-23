@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findByAuthorIdAndStatus(Long AuthorId, Status status);
+    List<Post> findAllByStatus(Status status);
 }

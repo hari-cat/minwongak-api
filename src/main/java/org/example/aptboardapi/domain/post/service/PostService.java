@@ -18,8 +18,8 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts(Long userId){
-        List<Post> posts = postRepository.findByAuthorIdAndStatus(userId, Status.ACTIVE);
+    public List<PostResponse> getPosts(){
+        List<Post> posts = postRepository.findAllByStatus(Status.ACTIVE);
         return posts.stream().map(PostResponse::from).toList();
     }
 }
