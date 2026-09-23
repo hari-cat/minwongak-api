@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
+import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
 import org.example.aptboardapi.domain.post.service.PostService;
 import org.example.aptboardapi.domain.user.CustomUserDetails;
@@ -18,6 +19,11 @@ import java.util.List;
 @RequestMapping("/api/v1/post")
 public class PostController {
     private final PostService postService;
+
+    @GetMapping("/{id}")
+    public PostDetailResponse getPost(@PathVariable("id") Long id) {
+        return postService.getPost(id);
+    }
 
     @GetMapping
     public List<PostResponse> getPosts(){

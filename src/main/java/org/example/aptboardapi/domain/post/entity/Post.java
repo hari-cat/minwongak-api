@@ -1,10 +1,7 @@
 package org.example.aptboardapi.domain.post.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.aptboardapi.common.entity.BaseEntity;
 import org.example.aptboardapi.domain.user.entity.User;
 

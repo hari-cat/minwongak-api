@@ -6,6 +6,7 @@ import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.common.exception.BusinessException;
 import org.example.aptboardapi.common.exception.ErrorCode;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
+import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
@@ -24,6 +25,12 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional(readOnly = true)
+    public PostDetailResponse getPost(Long id){
+        Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(()->new BusinessException(ErrorCode.POST_NOT_FOUND));
+        return PostDetailResponse.from(post);
+    }
+
+    @Transactional(readOnly = true)
     public List<PostResponse> getPosts(){
         List<Post> posts = postRepository.findAllByStatus(Status.ACTIVE);
         return posts.stream().map(PostResponse::from).toList();
@@ -31,7 +38,7 @@ public class PostService {
 
     @Transactional
     public Long createPost(CreatePostRequest request, Long userId){
-        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.NOT_FOUND_USER));
+        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = Post.create(request.title(), request.content(), request.category(), user);
 
         return postRepository.save(post).getId();
