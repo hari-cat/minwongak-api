@@ -27,6 +27,18 @@ public enum ErrorCode {
             "서버 내부 오류가 발생했습니다."
     ),
 
+    // 유저
+    NOT_FOUND_USER(
+            HttpStatus.NOT_FOUND,
+            "U001",
+            "유저를 찾을 수 없습니다."
+    ),
+    IS_EXIST_USER(
+            HttpStatus.CONFLICT,
+            "U002",
+            "이미 존재하는 유저 아이디입니다."
+    ),
+
     // 게시물
     POST_NOT_FOUND(
             HttpStatus.NOT_FOUND,
