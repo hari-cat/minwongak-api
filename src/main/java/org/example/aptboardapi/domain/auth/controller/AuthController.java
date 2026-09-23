@@ -65,7 +65,7 @@ public class AuthController {
                     httpResponse
             );
         } catch (Exception e){
-            throw new BusinessException(ErrorCode.NOT_FOUND_USER);
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
 
     }

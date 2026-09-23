@@ -28,7 +28,7 @@ public enum ErrorCode {
     ),
 
     // 유저
-    NOT_FOUND_USER(
+    USER_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "U001",
             "유저를 찾을 수 없습니다."
