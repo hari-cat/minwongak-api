@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
+import org.example.aptboardapi.domain.post.dto.UpdatePostRequest;
 import org.example.aptboardapi.domain.post.service.PostService;
 import org.example.aptboardapi.domain.user.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,12 +27,17 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostResponse> getPosts(){
+    public List<PostResponse> getPosts() {
         return postService.getPosts();
     }
 
     @PostMapping
-    public Long createPost(@Valid @RequestBody CreatePostRequest request, @AuthenticationPrincipal CustomUserDetails principal){
+    public Long createPost(@Valid @RequestBody CreatePostRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         return postService.createPost(request, principal.getUserId());
+    }
+
+    @PatchMapping("/{id}")
+    public void updatePost(@PathVariable("id") Long id, @Valid @RequestBody UpdatePostRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+        postService.updatePost(request, id, principal.getUserId());
     }
 }

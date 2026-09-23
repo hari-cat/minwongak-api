@@ -45,6 +45,11 @@ public enum ErrorCode {
             "P001",
             "게시물을 찾을 수 없습니다."
     ),
+    POST_UPDATE_FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "P002",
+            "게시물 수정 권한이 없습니다."
+    ),
 
     // 댓글
     COMMENT_NOT_FOUND(

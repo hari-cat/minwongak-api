@@ -8,6 +8,7 @@ import org.example.aptboardapi.common.exception.ErrorCode;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
+import org.example.aptboardapi.domain.post.dto.UpdatePostRequest;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
 import org.example.aptboardapi.domain.user.entity.User;
@@ -42,5 +43,17 @@ public class PostService {
         Post post = Post.create(request.title(), request.content(), request.category(), user);
 
         return postRepository.save(post).getId();
+    }
+
+    @Transactional
+    public void updatePost(UpdatePostRequest request,Long id, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
+        Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+
+        if(post.getAuthor() != user){
+            throw new BusinessException(ErrorCode.POST_UPDATE_FORBIDDEN);
+        }
+
+        post.update(request.title(), request.content(),request.category());
     }
 }

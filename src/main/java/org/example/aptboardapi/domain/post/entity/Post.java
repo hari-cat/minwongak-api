@@ -35,4 +35,16 @@ public class Post extends BaseEntity {
     public static Post create(String title, String content, Category category, User author) {
         return new Post(title, content, category, author);
     }
+
+    public void update(String title, String content, Category category) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+        if (category != null) {
+            this.category = category;
+        }
+    }
 }
