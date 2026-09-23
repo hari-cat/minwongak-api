@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.aptboardapi.common.exception.BusinessException;
+import org.example.aptboardapi.common.exception.ErrorCode;
 import org.example.aptboardapi.domain.auth.dto.LoginRequest;
 import org.example.aptboardapi.domain.auth.dto.SignUpRequest;
 import org.example.aptboardapi.domain.auth.service.AuthService;
@@ -40,26 +42,31 @@ public class AuthController {
 
     @PostMapping("/login")
     public void login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest, HttpServletResponse httpResponse){
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken(
-                        request.username(),
-                        request.password()
-                );
+        try{
+            UsernamePasswordAuthenticationToken token =
+                    new UsernamePasswordAuthenticationToken(
+                            request.username(),
+                            request.password()
+                    );
 
-        Authentication authentication =
-                authenticationManager.authenticate(token);
+            Authentication authentication =
+                    authenticationManager.authenticate(token);
 
-        SecurityContext context =
-                SecurityContextHolder.createEmptyContext();
+            SecurityContext context =
+                    SecurityContextHolder.createEmptyContext();
 
-        context.setAuthentication(authentication);
+            context.setAuthentication(authentication);
 
-        SecurityContextHolder.setContext(context);
+            SecurityContextHolder.setContext(context);
 
-        securityContextRepository.saveContext(
-                context,
-                httpRequest,
-                httpResponse
-        );
+            securityContextRepository.saveContext(
+                    context,
+                    httpRequest,
+                    httpResponse
+            );
+        } catch (Exception e){
+            throw new BusinessException(ErrorCode.NOT_FOUND_USER);
+        }
+
     }
 }
