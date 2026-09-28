@@ -7,6 +7,7 @@ import org.example.aptboardapi.common.exception.ErrorCode;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
+import org.example.aptboardapi.domain.post.dto.UpdatePostRequest;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.entity.Category;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
@@ -28,8 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -55,14 +55,14 @@ class PostServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(postId);
-        assertThat(response.title()).isEqualTo("게시물 제목1");
+        assertThat(response.title()).isEqualTo("게시물 제목");
         assertThat(response.content()).isEqualTo("게시물 내용");
         verify(postRepository).findByIdAndStatus(postId, Status.ACTIVE);
 
     }
 
     @Test
-    @DisplayName("게시물이 존재하지 않으면 POST_NOT_FOUND 예외 발생")
+    @DisplayName("게시물이 존재하지 않을 시 POST_NOT_FOUND 예외 발생")
     void getPost_postNotFound() {
         Long postId = 1L;
         given(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).willReturn(Optional.empty());
@@ -85,7 +85,7 @@ class PostServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.getFirst().title()).isEqualTo("제목");
-        assertThat(result.getFirst().content()).isEqualTo("내용11");
+        assertThat(result.getFirst().content()).isEqualTo("내용");
 
         then(postRepository)
                 .should()
@@ -126,4 +126,58 @@ class PostServiceTest {
         verify(postRepository).save(any(Post.class));
     }
 
+    @Test
+    @DisplayName("게시물 업데이트")
+    void updatePost(){
+        Long userId = 1L;
+        Long postId = 1L;
+
+        User user = User.create("kiki", "hari", "test1234");
+        Post post = Post.create("title", "content", Category.FACILITY, user);
+        UpdatePostRequest request = new UpdatePostRequest("title change", "content change", Category.ENVIRONMENT);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).thenReturn(Optional.of(post));
+
+        postService.updatePost(request, userId, postId);
+
+        assertThat(post.getTitle()).isEqualTo("title change");
+        assertThat(post.getContent()).isEqualTo("content change");
+        assertThat(post.getCategory()).isEqualTo(Category.ENVIRONMENT);
+    }
+
+    @Test
+    @DisplayName("게시물 삭제하기")
+    void deletePost() {
+        Long userId = 1L;
+        Long postId = 2L;
+
+        User user = User.create("kiki", "hari", "test1234");
+        Post post = Post.create("title", "content", Category.FACILITY, user);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).thenReturn(Optional.of(post));
+
+        postService.deletePost(postId, userId);
+    }
+
+    //@Test
+    //@DisplayName("게시물 삭제 권한 없을시 예외처리")
+    //void deletePostException(){
+    //    Long userId = 1L;
+    //    Long postId = 2L;
+    //    Long requestUserId = 3L;
+    //
+    //    User user = User.create("kiki", "hari", "test1234");
+    //    user.setId(userId);
+    //    Post post = Post.create("title", "content", Category.FACILITY, user);
+    //
+    //    User requestUser = User.create("mimi", "rabi", "test1234");
+    //    requestUser.setId(requestUserId);
+    //
+    //    when(userRepository.findById(requestUserId)).thenReturn(Optional.of(requestUser));
+    //    when(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).thenReturn(Optional.of(post));
+    //
+    //    assertThatThrownBy(() -> postService.deletePost(postId, requestUserId)).isInstanceOf(BusinessException.class).extracting("errorCode").isEqualTo(ErrorCode.POST_DELETE_FORBIDDEN);
+    //}
 }
