@@ -27,11 +27,33 @@ public enum ErrorCode {
             "서버 내부 오류가 발생했습니다."
     ),
 
+    // 유저
+    USER_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "U001",
+            "유저를 찾을 수 없습니다."
+    ),
+    IS_EXIST_USER(
+            HttpStatus.CONFLICT,
+            "U002",
+            "이미 존재하는 유저 아이디입니다."
+    ),
+
     // 게시물
     POST_NOT_FOUND(
             HttpStatus.NOT_FOUND,
             "P001",
             "게시물을 찾을 수 없습니다."
+    ),
+    POST_UPDATE_FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "P002",
+            "게시물 수정 권한이 없습니다."
+    ),
+    POST_DELETE_FORBIDDEN(
+            HttpStatus.FORBIDDEN,
+            "P003",
+            "게시물 삭제 권한이 없습니다."
     ),
 
     // 댓글
@@ -39,6 +61,13 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND,
             "CM001",
             "댓글을 찾을 수 없습니다."
+    ),
+
+    // 좋아요
+    POST_LIKE_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "PL001",
+            "해당 게시물을 좋아요 하지 않았습니다."
     );
 
     private final HttpStatus status;
