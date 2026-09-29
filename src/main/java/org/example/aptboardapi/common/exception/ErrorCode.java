@@ -62,6 +62,16 @@ public enum ErrorCode {
             "CM001",
             "댓글을 찾을 수 없습니다."
     ),
+    COMMENT_DEPTH_EXCEEDED(
+            HttpStatus.BAD_REQUEST,
+            "CM002",
+            "대댓글에는 댓글을 달 수 없습니다."
+    ),
+    COMMENT_POST_MISMATCH(
+            HttpStatus.BAD_REQUEST,
+            "CM003",
+            "해당 게시물에 대댓글을 달 수 없습니다."
+    ),
 
     // 좋아요
     POST_LIKE_NOT_FOUND(
