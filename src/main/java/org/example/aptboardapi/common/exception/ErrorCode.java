@@ -61,6 +61,13 @@ public enum ErrorCode {
             HttpStatus.NOT_FOUND,
             "CM001",
             "댓글을 찾을 수 없습니다."
+    ),
+
+    // 좋아요
+    POST_LIKE_NOT_FOUND(
+            HttpStatus.NOT_FOUND,
+            "PL001",
+            "해당 게시물을 좋아요 하지 않았습니다."
     );
 
     private final HttpStatus status;
