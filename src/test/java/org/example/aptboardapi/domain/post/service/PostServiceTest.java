@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.common.exception.BusinessException;
 import org.example.aptboardapi.common.exception.ErrorCode;
+import org.example.aptboardapi.domain.like.repository.PostLikeRepository;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
@@ -24,8 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -40,25 +40,35 @@ class PostServiceTest {
     @Mock
     private PostRepository postRepository;
 
+    @Mock
+    private PostLikeRepository postLikeRepository;
+
     @InjectMocks
     private PostService postService;
 
     @Test
     @DisplayName("게시물 단건조회")
     void getPost() {
-        User user = new User(1L, "test", "test1", "894989", Role.USER);
+        Long userId = 1L;
+        User user = new User(userId, "test", "test1", "894989", Role.USER);
         Long postId = 1L;
         Post post = new Post(postId, "게시물 제목", "게시물 내용", Category.FACILITY, 1, user);
-        given(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).willReturn(Optional.of(post));
 
-        PostDetailResponse response = postService.getPost(postId);
+        given(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).willReturn(Optional.of(post));
+        given(postLikeRepository.countByPostId(postId)).willReturn(3);
+        given(postLikeRepository.existsByPostIdAndUserId(postId, userId)).willReturn(true);
+
+        PostDetailResponse response = postService.getPost(user.getId(),postId);
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(postId);
         assertThat(response.title()).isEqualTo("게시물 제목");
         assertThat(response.content()).isEqualTo("게시물 내용");
-        verify(postRepository).findByIdAndStatus(postId, Status.ACTIVE);
+        assertThat(response.likeCount()).isEqualTo(3);
+        assertThat(response.liked()).isEqualTo(true);
 
+        then(postRepository).should().increaseReadCount(postId, Status.ACTIVE);
+        then(postRepository).should().findByIdAndStatus(postId, Status.ACTIVE);
     }
 
     @Test
@@ -66,7 +76,7 @@ class PostServiceTest {
     void getPost_postNotFound() {
         Long postId = 1L;
         given(postRepository.findByIdAndStatus(postId, Status.ACTIVE)).willReturn(Optional.empty());
-        assertThatThrownBy(() -> postService.getPost(postId)).isInstanceOf(BusinessException.class).extracting("errorCode").isEqualTo(ErrorCode.POST_NOT_FOUND);
+        assertThatThrownBy(() -> postService.getPost(1L, postId)).isInstanceOf(BusinessException.class).extracting("errorCode").isEqualTo(ErrorCode.POST_NOT_FOUND);
         verify(postRepository).findByIdAndStatus(postId, Status.ACTIVE);
     }
 
@@ -180,4 +190,5 @@ class PostServiceTest {
     //
     //    assertThatThrownBy(() -> postService.deletePost(postId, requestUserId)).isInstanceOf(BusinessException.class).extracting("errorCode").isEqualTo(ErrorCode.POST_DELETE_FORBIDDEN);
     //}
+
 }
