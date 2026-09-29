@@ -22,8 +22,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/{id}")
-    public PostDetailResponse getPost(@PathVariable("id") Long id) {
-        return postService.getPost(id);
+    public PostDetailResponse getPost(@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails principal) {
+        return postService.getPost(principal.getUserId(), id);
     }
 
     @GetMapping

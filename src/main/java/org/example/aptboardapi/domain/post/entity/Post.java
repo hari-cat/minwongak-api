@@ -20,7 +20,7 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
-    private int readCount;
+    private int readCount = 0;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
@@ -46,5 +46,9 @@ public class Post extends BaseEntity {
         if (category != null) {
             this.category = category;
         }
+    }
+
+    public void increaseReadCount(){
+        this.readCount++;
     }
 }

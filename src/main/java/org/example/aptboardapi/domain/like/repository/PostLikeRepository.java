@@ -9,4 +9,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
     boolean existsByPostIdAndUserId(Long postId, Long userId);
 
     Optional<PostLike> findByPostIdAndUserId(Long postId, Long userId);
+
+    int countByPostId(Long postId);
 }

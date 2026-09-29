@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.common.exception.BusinessException;
 import org.example.aptboardapi.common.exception.ErrorCode;
+import org.example.aptboardapi.domain.like.repository.PostLikeRepository;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
@@ -24,45 +25,51 @@ import java.util.List;
 public class PostService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
-    @Transactional(readOnly = true)
-    public PostDetailResponse getPost(Long id){
-        Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(()->new BusinessException(ErrorCode.POST_NOT_FOUND));
-        return PostDetailResponse.from(post);
+    @Transactional
+    public PostDetailResponse getPost(Long userId, Long postId) {
+        postRepository.increaseReadCount(postId,Status.ACTIVE);
+        Post post = postRepository.findByIdAndStatus(postId, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
+        int likeCount = postLikeRepository.countByPostId(postId);
+        boolean liked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
+
+        return PostDetailResponse.from(post, likeCount, liked);
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts(){
+    public List<PostResponse> getPosts() {
         List<Post> posts = postRepository.findAllByStatus(Status.ACTIVE);
+
         return posts.stream().map(PostResponse::from).toList();
     }
 
     @Transactional
-    public Long createPost(CreatePostRequest request, Long userId){
-        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public Long createPost(CreatePostRequest request, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = Post.create(request.title(), request.content(), request.category(), user);
 
         return postRepository.save(post).getId();
     }
 
     @Transactional
-    public void updatePost(UpdatePostRequest request,Long id, Long userId){
-        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
+    public void updatePost(UpdatePostRequest request, Long id, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if(post.getAuthor() != user){
+        if (post.getAuthor() != user) {
             throw new BusinessException(ErrorCode.POST_UPDATE_FORBIDDEN);
         }
 
-        post.update(request.title(), request.content(),request.category());
+        post.update(request.title(), request.content(), request.category());
     }
 
     @Transactional
     public void deletePost(Long id, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         Post post = postRepository.findByIdAndStatus(id, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
-        if(post.getAuthor() != user){
+        if (post.getAuthor() != user) {
             throw new BusinessException(ErrorCode.POST_DELETE_FORBIDDEN);
         }
 
