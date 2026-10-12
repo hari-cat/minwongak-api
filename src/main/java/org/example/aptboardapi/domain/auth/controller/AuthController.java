@@ -41,7 +41,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public void signup(@Valid @RequestBody SignUpRequest request){
-        log.info("request={}", request);
         authService.signup(request);
     }
 
