@@ -21,10 +21,6 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
 
 server:
   port: 8080

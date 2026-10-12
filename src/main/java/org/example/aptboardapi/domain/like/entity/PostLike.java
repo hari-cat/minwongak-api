@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.aptboardapi.common.entity.BaseEntity;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.user.entity.User;
 
@@ -15,7 +16,7 @@ import org.example.aptboardapi.domain.user.entity.User;
 })
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class PostLike {
+public class PostLike extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
