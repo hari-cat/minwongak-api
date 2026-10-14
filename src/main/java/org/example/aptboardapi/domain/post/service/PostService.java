@@ -10,6 +10,7 @@ import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
 import org.example.aptboardapi.domain.post.dto.UpdatePostRequest;
+import org.example.aptboardapi.domain.post.entity.Category;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
 import org.example.aptboardapi.domain.user.entity.User;
@@ -29,7 +30,7 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse getPost(Long userId, Long postId) {
-        postRepository.increaseReadCount(postId,Status.ACTIVE);
+        postRepository.increaseReadCount(postId, Status.ACTIVE);
         Post post = postRepository.findByIdAndStatus(postId, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         int likeCount = postLikeRepository.countByPostId(postId);
         boolean liked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
@@ -38,10 +39,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts() {
-        List<Post> posts = postRepository.findAllByStatus(Status.ACTIVE);
-
-        return posts.stream().map(PostResponse::from).toList();
+    public List<PostResponse> getPosts(String title, String content, Category category) {
+        return postRepository.search(title, content, category, Status.ACTIVE);
     }
 
     @Transactional
