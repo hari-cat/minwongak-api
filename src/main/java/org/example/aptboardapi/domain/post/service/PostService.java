@@ -5,15 +5,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.common.exception.BusinessException;
 import org.example.aptboardapi.common.exception.ErrorCode;
+import org.example.aptboardapi.common.response.PageResponse;
 import org.example.aptboardapi.domain.like.repository.PostLikeRepository;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
 import org.example.aptboardapi.domain.post.dto.UpdatePostRequest;
+import org.example.aptboardapi.domain.post.entity.Category;
 import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
 import org.example.aptboardapi.domain.user.entity.User;
 import org.example.aptboardapi.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +33,7 @@ public class PostService {
 
     @Transactional
     public PostDetailResponse getPost(Long userId, Long postId) {
-        postRepository.increaseReadCount(postId,Status.ACTIVE);
+        postRepository.increaseReadCount(postId, Status.ACTIVE);
         Post post = postRepository.findByIdAndStatus(postId, Status.ACTIVE).orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         int likeCount = postLikeRepository.countByPostId(postId);
         boolean liked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
@@ -38,10 +42,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts() {
-        List<Post> posts = postRepository.findAllByStatus(Status.ACTIVE);
-
-        return posts.stream().map(PostResponse::from).toList();
+    public Page<PostResponse> getPosts(String title, String content, Category category, Pageable pageable) {
+        return postRepository.search(title, content, category, Status.ACTIVE, pageable);
     }
 
     @Transactional
