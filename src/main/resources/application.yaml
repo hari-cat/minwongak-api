@@ -2,6 +2,11 @@ spring:
   application:
     name: apt-board-api
 
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
