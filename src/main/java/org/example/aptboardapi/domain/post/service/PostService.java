@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.common.exception.BusinessException;
 import org.example.aptboardapi.common.exception.ErrorCode;
+import org.example.aptboardapi.common.response.PageResponse;
 import org.example.aptboardapi.domain.like.repository.PostLikeRepository;
 import org.example.aptboardapi.domain.post.dto.CreatePostRequest;
 import org.example.aptboardapi.domain.post.dto.PostDetailResponse;
@@ -15,6 +16,8 @@ import org.example.aptboardapi.domain.post.entity.Post;
 import org.example.aptboardapi.domain.post.repository.PostRepository;
 import org.example.aptboardapi.domain.user.entity.User;
 import org.example.aptboardapi.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +42,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPosts(String title, String content, Category category) {
-        return postRepository.search(title, content, category, Status.ACTIVE);
+    public Page<PostResponse> getPosts(String title, String content, Category category, Pageable pageable) {
+        return postRepository.search(title, content, category, Status.ACTIVE, pageable);
     }
 
     @Transactional

@@ -4,17 +4,16 @@ import org.example.aptboardapi.common.entity.Status;
 import org.example.aptboardapi.domain.post.dto.PostResponse;
 import org.example.aptboardapi.domain.post.entity.Category;
 import org.example.aptboardapi.domain.post.entity.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-    List<Post> findAllByStatus(Status status);
-
     @Query("""
             select new org.example.aptboardapi.domain.post.dto.PostResponse(
                 p.category, p.title, p.content, p.author.nickname, p.createdAt, p.readCount, 1)
@@ -25,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
               and (:category is null or p.category = :category)
             order by p.createdAt desc
             """)
-    List<PostResponse> search(@Param("title") String title, @Param("content") String content, @Param("category") Category category, @Param("status") Status status);
+    Page<PostResponse> search(@Param("title") String title, @Param("content") String content, @Param("category") Category category, @Param("status") Status status, Pageable pageable);
 
     Optional<Post> findByIdAndStatus(Long id, Status status);
 
