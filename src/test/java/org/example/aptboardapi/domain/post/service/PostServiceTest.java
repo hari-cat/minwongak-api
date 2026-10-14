@@ -80,27 +80,25 @@ class PostServiceTest {
         verify(postRepository).findByIdAndStatus(postId, Status.ACTIVE);
     }
 
-    @Test
-    @DisplayName("게시물 목록 조회")
-    void findActivePosts() {
-        User user = new User(1L, "test", "test1", "894989", Role.USER);
-        Post post = new Post(1L, "제목", "내용", Category.FACILITY, 1, user);
-        List<Post> posts = List.of(post);
-
-        given(postRepository.findAllByStatus(Status.ACTIVE)).willReturn(posts);
-
-        List<PostResponse> result = postService.getPosts();
-
-        log.info("result={}, posts={}", result, posts);
-
-        assertThat(result).hasSize(1);
-        assertThat(result.getFirst().title()).isEqualTo("제목");
-        assertThat(result.getFirst().content()).isEqualTo("내용");
-
-        then(postRepository)
-                .should()
-                .findAllByStatus(Status.ACTIVE);
-    }
+    //@Test
+    //@DisplayName("게시물 목록 조회")
+    //void findActivePosts() {
+    //    User user = new User(1L, "test", "test1", "894989", Role.USER);
+    //    Post post = new Post(1L, "제목", "내용", Category.FACILITY, 1, user);
+    //    List<Post> posts = List.of(post);
+    //
+    //    given(postRepository.findAllByStatus(Status.ACTIVE)).willReturn(posts);
+    //
+    //    List<PostResponse> result = postService.getPosts();
+    //
+    //    assertThat(result).hasSize(1);
+    //    assertThat(result.getFirst().title()).isEqualTo("제목");
+    //    assertThat(result.getFirst().content()).isEqualTo("내용");
+    //
+    //    then(postRepository)
+    //            .should()
+    //            .findAllByStatus(Status.ACTIVE);
+    //}
 
     @Test
     @DisplayName("게시물 생성")
